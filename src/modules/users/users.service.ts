@@ -30,6 +30,6 @@ export class UsersService {
   }
 
   remove(id: string) {
-    return this.userRepository.delete(id);
+    return this.userRepository.deleteUser(id);
   }
 }
