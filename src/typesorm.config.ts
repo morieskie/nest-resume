@@ -1,4 +1,3 @@
-import { Module } from '@nestjs/common';
 import { join } from 'path';
 import { DataSource } from 'typeorm';
 
@@ -27,9 +26,3 @@ export const databaseProviders = [
     },
   },
 ];
-
-@Module({
-  providers: [...databaseProviders],
-  exports: [...databaseProviders],
-})
-export class DatabaseModule {}
