@@ -7,9 +7,9 @@ export const databaseProviders = [
     provide: 'DATA_SOURCE',
     inject: [ConfigService],
     useFactory: async (configService: ConfigService) => {
-      const mongodbUrl = configService.get<string>('MONGODB_URL');
+      const mongodbUrl = configService.get<string>('DB_URL');
       if (!mongodbUrl) {
-        throw new Error('MONGODB_URL is not defined in the configuration');
+        throw new Error('DB_URL is not defined in the configuration');
       }
 
       const dataSource = new DataSource({
