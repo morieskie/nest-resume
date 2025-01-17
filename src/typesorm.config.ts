@@ -1,20 +1,23 @@
 import { join } from 'path';
 import { DataSource } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
 
 export const databaseProviders = [
   {
     provide: 'DATA_SOURCE',
-    useFactory: async () => {
+    inject: [ConfigService],
+    useFactory: async (configService: ConfigService) => {
+      const mongodbUrl = configService.get<string>('MONGODB_URL');
+      if (!mongodbUrl) {
+        throw new Error('MONGODB_URL is not defined in the configuration');
+      }
+
       const dataSource = new DataSource({
         type: 'mongodb',
-        host: 'localhost',
-        port: 27017,
-        username: 'mongodb',
-        password: 'mongo',
-        database: 'nest-resume',
-        entities: [join(__dirname, '**', '*.entity{.ts,.js}')], 
+        url: mongodbUrl,
+        entities: [join(__dirname, '**', '*.entity{.ts,.js}')],
         synchronize: true,
-        useUnifiedTopology: true
+        useUnifiedTopology: true,
       });
 
       try {

@@ -1,4 +1,6 @@
 import { NestFactory } from '@nestjs/core';
+import * as dotenv from 'dotenv';
+dotenv.config();
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
@@ -6,8 +8,8 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: ['*']
-    }
+      origin: ['*'],
+    },
   });
 
   app.enableVersioning({
@@ -24,11 +26,13 @@ async function bootstrap() {
   const documentFactory = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
 
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    disableErrorMessages: false,
-    // exceptionFactory?: (errors: ValidationError[]) => any;
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      disableErrorMessages: false,
+      // exceptionFactory?: (errors: ValidationError[]) => any;
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 8000);
 }
