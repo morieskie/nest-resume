@@ -1,28 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
+import { userProviders } from './user.providers';
+import { UserRepository } from './repositories/user.repository';
 
-const userRepository = jest.fn().mockImplementation(() => ({
+const userRepositoryMock = {
   createUser: jest.fn(),
   updateUser: jest.fn(),
   findOneUser: jest.fn(),
   deleteUser: jest.fn(),
   findUsers: jest.fn().mockReturnValue([{ id: 'test', name: 'Test User' }]),
-}));
-const repository = new userRepository();
-const userProviders = [
-  {
-    provide: 'UserRepository',
-    useFactory: () => repository,
-  },
-];
+};
 
 describe('UsersService', () => {
   let service: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [...userProviders, userRepository, UsersService],
-    }).compile();
+      providers: [
+        UsersService,
+        {
+          provide: 'UserRepository',
+          useValue: userRepositoryMock,
+        },
+      ],
+    })
+      .overrideProvider('DATA_SOURCE')
+      .useValue(userRepositoryMock)
+      .compile();
 
     service = module.get<UsersService>(UsersService);
   });
@@ -32,25 +36,25 @@ describe('UsersService', () => {
   });
 
   it('should get all users from MongoDB', async () => {
-    const spy = jest.spyOn(repository, 'findUsers');
+    const spy = jest.spyOn(userRepositoryMock, 'findUsers');
     const response = await service.findAll();
     expect(spy).toHaveBeenCalled();
   });
 
   it('should get one user from MongoDB', async () => {
-    const spy = jest.spyOn(repository, 'findOneUser');
+    const spy = jest.spyOn(userRepositoryMock, 'findOneUser');
     const response = await service.findOne('ObjectId(8845jdgvd)');
     expect(spy).toHaveBeenCalled();
   });
 
   it('should delete a user from MongoDB', async () => {
-    const spy = jest.spyOn(repository, 'deleteUser');
+    const spy = jest.spyOn(userRepositoryMock, 'deleteUser');
     const response = await service.remove('ObjectId(8845jdgvd)');
     expect(spy).toHaveBeenCalled();
   });
 
   it('should update a user from MongoDB', async () => {
-    const spy = jest.spyOn(repository, 'updateUser');
+    const spy = jest.spyOn(userRepositoryMock, 'updateUser');
     const response = await service.update('ObjectId(8845jdgvd)', {
       email: 'jane@doe.io',
     });
@@ -60,7 +64,7 @@ describe('UsersService', () => {
   });
 
   it('should create a user', () => {
-    const spy = jest.spyOn(repository, 'createUser');
+    const spy = jest.spyOn(userRepositoryMock, 'createUser');
     const data = {
       name: { firstName: 'test', lastName: 'user' },
       email: 'email@test.com',
