@@ -2,20 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
-const UserRepository = jest.fn().mockImplementation(() => ({
-  createUser: jest.fn(),
-  updataUser: jest.fn(),
-  findOneUser: jest.fn(),
-  deleteUser: jest.fn(),
+const serviceMock = {
+  create: jest.fn(),
+  update: jest.fn(),
+  findOne: jest.fn(),
+  remove: jest.fn(),
   findAll: jest.fn(),
-}));
-
-const userProviders = [
-  {
-    provide: 'UserRepository',
-    useFactory: () => new UserRepository(),
-  },
-];
+};
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -24,17 +17,9 @@ describe('UsersController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
       providers: [
-        ...userProviders,
-        UsersService,
         {
           provide: UsersService,
-          useValue: {
-            create: jest.fn(),
-            update: jest.fn(),
-            findOne: jest.fn(),
-            remove: jest.fn(),
-            findAll: jest.fn(),
-          },
+          useValue: serviceMock,
         },
       ],
     }).compile();

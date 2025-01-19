@@ -1,4 +1,5 @@
-import { Column, Entity, ObjectId, ObjectIdColumn } from 'typeorm';
+import { Project } from '../../projects/entities/project.entity';
+import { Column, Entity, ObjectId, ObjectIdColumn, OneToMany } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
@@ -34,4 +35,7 @@ export class User {
     firm: string;
     url: string;
   }[];
+
+  @OneToMany(() => Project, (project: Project) => project.user)
+  projects: Project[];
 }
