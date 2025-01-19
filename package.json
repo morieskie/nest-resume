@@ -45,6 +45,7 @@
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
+    "@shelf/jest-mongodb": "^4.3.2",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.2",
@@ -82,6 +83,7 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "preset": "@shelf/jest-mongodb"
   }
 }
