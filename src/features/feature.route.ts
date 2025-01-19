@@ -1,15 +1,15 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { UsersModule } from 'src/modules/users/users.module';
-import { ProjectsModule } from 'src/modules/projects/projects.module';
+import { UsersModule } from '../modules/users/users.module';
+import { ProjectsModule } from '../modules/projects/projects.module';
+import { ExperienceModule } from '../modules/experience/experience.module';
 // import { EducationModule } from 'src/education/education.module';
-// import { ExperienceModule } from 'src/experience/experience.module';
 
 @Module({
   imports: [
     UsersModule,
     ProjectsModule,
+    ExperienceModule,
     // EducationModule,
-    //  ExperienceModule,
   ],
 })
 export class FeatureRoute implements NestModule {
