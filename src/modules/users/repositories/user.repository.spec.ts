@@ -2,32 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { DataSource } from 'typeorm';
-import { projectsProviders } from '../../projects/projects.providers';
 import { userProviders } from '../user.providers';
 import { ObjectId } from 'mongodb';
-
-export const createMockRepository = <T>(entity: any, suffix: string = '') => {
-  return {
-    [`find${suffix}s`]: jest.fn(),
-    [`findOne${suffix}`]: jest.fn(),
-    [`create${suffix}`]: jest.fn(),
-    [`update${suffix}`]: jest.fn(),
-    [`delete${suffix}`]: jest.fn(),
-  };
-};
-export const createMockService = <T>(entity: any) => {
-  return {
-    [`findAll`]: () => jest.fn().mockResolvedValue({ error: null, data: [] }),
-    [`findOne`]: () => jest.fn(),
-    [`create`]: () => jest.fn(),
-    [`update`]: () => jest.fn(),
-    [`remove`]: () => jest.fn(),
-  };
-};
+import { createMockService, dataSourceMock } from '../../../../mocks/mock.help';
+import { ProjectsService } from '../../projects/projects.service';
+import { ExperienceService } from '../../experience/experience.service';
+import { Experience } from '../../experience/entities/experience.entity';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
   let module: TestingModule;
+  let projectService: ProjectsService;
   let mockData: CreateUserDto = {
     name: {
       firstName: 'Test',
@@ -48,38 +33,31 @@ describe('UserRepository', () => {
   };
 
   beforeEach(async () => {
-    const dataSource = {
-      getEntityManagerToken: jest.fn(),
-      getEntityManagerEngine: jest.fn(),
-      queryRunner: jest.fn(),
-      createEntityManager: jest.fn().mockReturnValue({
-        getRepository: jest.fn().mockImplementation((entity) => {
-          return {
-            save: jest.fn(),
-            find: jest.fn(),
-            update: jest.fn(),
-            delete: jest.fn(),
-          };
-        }),
-      }),
-    };
     module = await Test.createTestingModule({
       providers: [
         {
           provide: 'DATA_SOURCE',
-          useValue: dataSource,
+          useValue: dataSourceMock,
         },
         {
           provide: DataSource,
-          useValue: dataSource,
+          useValue: dataSourceMock,
         },
         UserRepository,
-        ...projectsProviders,
         ...userProviders,
+        {
+          provide: ProjectsService,
+          useValue: createMockService(ProjectsService),
+        },
+        {
+          provide: ExperienceService,
+          useValue: createMockService(Experience),
+        },
       ],
     }).compile();
 
     repository = module.get<UserRepository>(UserRepository);
+    projectService = module.get<ProjectsService>(ProjectsService);
   });
 
   describe('CreateUser', () => {
@@ -171,6 +149,57 @@ describe('UserRepository', () => {
         .mockRejectedValueOnce(new Error('Something went bizzack'));
       const { error, data } = await repository.findOneUser(id.toString());
       expect(error).toBe('Something went bizzack');
+      expect(data).toBeNull();
+    });
+  });
+
+  describe('GetUsers', () => {
+    const id = ObjectId.generate(new Date().getTime());
+
+    it('should handle retrieval without criteria filter', async () => {
+      repository.find = jest.fn().mockReturnValue([
+        {
+          ...mockData,
+          id,
+        },
+      ]);
+
+      const { error, data } = await repository.findUsers();
+      expect(error).toBeNull();
+      expect(data).toMatchObject([
+        {
+          ...mockData,
+          id,
+        },
+      ]);
+    });
+
+    it('should handle retrieval using criteria filter', async () => {
+      repository.find = jest.fn().mockReturnValue([
+        {
+          ...mockData,
+          id,
+        },
+      ]);
+
+      const { error, data } = await repository.findUsers({
+        email: 'abc2123.com',
+      });
+      expect(error).toBeNull();
+      expect(data).toMatchObject([
+        {
+          ...mockData,
+          id,
+        },
+      ]);
+    });
+
+    it('should handle failure error response', async () => {
+      repository.find = jest
+        .fn()
+        .mockRejectedValueOnce(new Error('Something went bizzack'));
+      const { error, data } = await repository.findUsers();
+      expect(error).toBeInstanceOf(Error);
       expect(data).toBeNull();
     });
   });
