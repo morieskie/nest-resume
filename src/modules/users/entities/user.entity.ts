@@ -1,3 +1,4 @@
+import { Experience } from '../../experience/entities/experience.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Column, Entity, ObjectId, ObjectIdColumn, OneToMany } from 'typeorm';
 
@@ -37,5 +38,8 @@ export class User {
   }[];
 
   @OneToMany(() => Project, (project: Project) => project.user)
-  projects: Project[];
+  projects?: Project[];
+
+  @OneToMany(() => Experience, (experience: Experience) => experience.user)
+  experience?: Experience[];
 }

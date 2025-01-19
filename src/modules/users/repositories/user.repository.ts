@@ -4,12 +4,14 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { Inject, Injectable } from '@nestjs/common';
 import { ProjectsService } from '../../projects/projects.service';
+import { ExperienceService } from '../../experience/experience.service';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(ProjectsService) private projectService: ProjectsService,
+    @Inject(ExperienceService) private experienceService: ExperienceService,
   ) {
     super(User, dataSource.createEntityManager());
   }
@@ -27,7 +29,7 @@ export class UserRepository extends Repository<User> {
   }
 
   async findUsers(
-    criteria: any,
+    criteria: any = {},
   ): Promise<{ error: Error | null; data: User[] | null }> {
     try {
       const response = await this.find({ where: { ...criteria } });
@@ -43,11 +45,16 @@ export class UserRepository extends Repository<User> {
     try {
       const response = (await this.findOne(id as any)) as User;
       if (response && response.id) {
-        const { error, data } = await this.projectService.findAll({
+        const projectsResponse = await this.projectService.findAll({
           userId: response.id.toString(),
         });
 
-        response.projects = !error ? data : [];
+        const experienceResponse = await this.experienceService.findAll({
+          userId: response.id.toString(),
+        });
+
+        response.projects = projectsResponse.data as [];
+        response.experience = experienceResponse.data as [];
       }
 
       return { error: null, data: response };
