@@ -21,7 +21,7 @@ export class ExperienceRepository extends Repository<Experience> {
 
   async findExperiences(
     criteria: any,
-  ): Promise<{ error: Error | null; data: Experience[] | null }> {
+  ): Promise<{ error: Error | null; data: Experience[] | null}> {
     try {
       const response = await this.find({ where: { ...criteria } });
       return { error: null, data: response };

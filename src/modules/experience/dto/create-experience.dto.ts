@@ -1,6 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateExperienceDto {
+  @IsMongoId()
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
   @IsString()
   @IsNotEmpty()
   company: string;
@@ -15,5 +19,5 @@ export class CreateExperienceDto {
   role: string;
   @IsString()
   @IsNotEmpty()
-  description:string;
+  description: string;
 }

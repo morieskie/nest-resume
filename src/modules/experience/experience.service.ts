@@ -12,8 +12,8 @@ export class ExperienceService {
     return this.repository.createExperience(createExperienceDto);
   }
 
-  findAll() {
-    return this.repository.findExperiences({});
+  findAll(criteria: UpdateExperienceDto = {}) {
+    return this.repository.findExperiences({ ...criteria });
   }
 
   findOne(id: string) {
