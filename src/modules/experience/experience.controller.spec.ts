@@ -9,6 +9,7 @@ describe('ExperienceController', () => {
   let controller: ExperienceController;
   let service: ExperienceService;
   const mockData = {
+    userId: ObjectId.generate(new Date().getTime()).toString(),
     company: 'acme',
     from: 'Feb 2022',
     to: 'Aug 2024',

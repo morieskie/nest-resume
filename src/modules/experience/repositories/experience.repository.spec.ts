@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 describe('ExprienceRepository', () => {
   let repository: ExperienceRepository;
   const mockData = {
+    userId: ObjectId.generate(new Date().getTime()).toString(),
     company: 'acme',
     from: 'Feb 2022',
     to: 'Aug 2024',
