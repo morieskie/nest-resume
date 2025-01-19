@@ -44,5 +44,5 @@ export class Project {
   images: string[];
 
   @ManyToOne(() => User, (user: User) => user.projects)
-  user: User;
+  user?: User;
 }
