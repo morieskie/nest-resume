@@ -1,3 +1,4 @@
+import { Education } from '../../education/entities/education.entity';
 import { Experience } from '../../experience/entities/experience.entity';
 import { Project } from '../../projects/entities/project.entity';
 import { Column, Entity, ObjectId, ObjectIdColumn, OneToMany } from 'typeorm';
@@ -42,4 +43,7 @@ export class User {
 
   @OneToMany(() => Experience, (experience: Experience) => experience.user)
   experience?: Experience[];
+
+  @OneToMany(() => Education, (education: Education) => education.user)
+  education?: Education[];
 }
