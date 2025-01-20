@@ -4,6 +4,7 @@ import { UserRepository } from './repositories/user.repository';
 import { DataSource } from 'typeorm';
 import { ProjectsService } from '../projects/projects.service';
 import { projectsProviders } from '../projects/projects.providers';
+import { educationProviders } from '../education/education.providers';
 
 describe('UserProviders', () => {
   let dataSource: any;
@@ -23,7 +24,7 @@ describe('UserProviders', () => {
           provide: 'DATA_SOURCE',
           useValue: dataSourceMock,
         },
-        ...userProviders, ...projectsProviders
+        ...userProviders, ...projectsProviders, ...educationProviders
       ],
     }).compile();
     dataSource = module.get('DATA_SOURCE');
