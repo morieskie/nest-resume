@@ -5,6 +5,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { Inject, Injectable } from '@nestjs/common';
 import { ProjectsService } from '../../projects/projects.service';
 import { ExperienceService } from '../../experience/experience.service';
+import { EducationService } from '../../education/education.service';
 
 @Injectable()
 export class UserRepository extends Repository<User> {
@@ -12,6 +13,7 @@ export class UserRepository extends Repository<User> {
     private readonly dataSource: DataSource,
     @Inject(ProjectsService) private projectService: ProjectsService,
     @Inject(ExperienceService) private experienceService: ExperienceService,
+    @Inject(EducationService) private educationService: EducationService,
   ) {
     super(User, dataSource.createEntityManager());
   }
@@ -53,8 +55,13 @@ export class UserRepository extends Repository<User> {
           userId: response.id.toString(),
         });
 
+        const educationResponse = await this.educationService.findAll({
+          userId: response.id.toString(),
+        });
+
         response.projects = projectsResponse.data as [];
         response.experience = experienceResponse.data as [];
+        response.experience = educationResponse.data as [];
       }
 
       return { error: null, data: response };

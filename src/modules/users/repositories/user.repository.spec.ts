@@ -8,6 +8,8 @@ import { createMockService, dataSourceMock } from '../../../../mocks/mock.help';
 import { ProjectsService } from '../../projects/projects.service';
 import { ExperienceService } from '../../experience/experience.service';
 import { Experience } from '../../experience/entities/experience.entity';
+import { EducationService } from '../../education/education.service';
+import { Education } from '../../education/entities/education.entity';
 
 describe('UserRepository', () => {
   let repository: UserRepository;
@@ -52,6 +54,10 @@ describe('UserRepository', () => {
         {
           provide: ExperienceService,
           useValue: createMockService(Experience),
+        },
+        {
+          provide: EducationService,
+          useValue: createMockService(Education),
         },
       ],
     }).compile();
